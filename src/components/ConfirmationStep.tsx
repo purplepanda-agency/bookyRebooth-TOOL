@@ -208,14 +208,16 @@ export function ConfirmationStep({
   if (created) {
     const thanksImage = mediaUrl(created.seller.imageUrl);
     return (
-      <div className="confirm-layout">
+      <div className="confirm-layout confirm-layout-thanks">
         <h1 className="confirm-page-title">Bedankt voor je afspraak</h1>
         <p className="confirm-thanks-lead">
           Je afspraak is bevestigd. Dit zijn de details:
         </p>
 
-        <div className="confirm-thanks-grid">
-          <article className="confirm-card">
+        <div
+          className={`confirm-thanks-grid${created.productName ? " confirm-thanks-grid-with-product" : ""}`}
+        >
+          <article className="confirm-card confirm-thanks-details">
             <div className="confirm-card-hero confirm-card-hero-seller">
               {thanksImage ? (
                 <img
@@ -253,7 +255,7 @@ export function ConfirmationStep({
           </article>
 
           {created.productName ? (
-            <article className="confirm-card">
+            <article className="confirm-card confirm-thanks-product">
               {productImage ? (
                 <img
                   className="confirm-card-media"

@@ -715,6 +715,12 @@ input {
   gap: 1.5rem;
 }
 
+.confirm-layout-thanks {
+  flex: 1;
+  justify-content: center;
+  min-height: 0;
+}
+
 .confirm-page-title {
   margin: 0;
   text-align: center;
@@ -733,10 +739,19 @@ input {
 
 .confirm-thanks-grid {
   width: 100%;
-  max-width: 720px;
+  max-width: 960px;
   margin: 0 auto;
   display: grid;
   gap: 1rem;
+  align-items: stretch;
+}
+
+.confirm-thanks-grid-with-product {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.confirm-thanks-product .confirm-card-media {
+  aspect-ratio: 4 / 3;
 }
 
 .confirm-grid {
@@ -924,7 +939,8 @@ input {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .confirm-grid {
+  .confirm-grid,
+  .confirm-thanks-grid-with-product {
     grid-template-columns: 1fr;
   }
 }
