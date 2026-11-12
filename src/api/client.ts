@@ -197,6 +197,23 @@ export type CreatedBooking = {
   calendarEventId: string;
 };
 
+/** Fire-and-forget client-side 404 (ongeldige flow-URL / keuze). */
+export function trackNotFound404(message: string) {
+  if (!ENTITY_SLUG) return;
+
+  const path = `/api/public/${encodeURIComponent(ENTITY_SLUG)}/analytics/events`;
+  void fetch(publicUrl(path), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "NOT_FOUND_404",
+      message: message.slice(0, 500),
+    }),
+  }).catch(() => {
+    /* never block the UI */
+  });
+}
+
 export async function createPublicBooking(
   input: CreateBookingPayload,
 ): Promise<CreatedBooking> {

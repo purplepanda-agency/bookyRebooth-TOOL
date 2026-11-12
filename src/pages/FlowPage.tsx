@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   fetchFlow,
+  trackNotFound404,
   type PublicFlow,
   type PublicFlowStep,
 } from "../api/client";
@@ -39,6 +40,7 @@ export function FlowPage() {
   const [steps, setSteps] = useState<PublicFlowStep[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const trackedInvalidPath = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,6 +80,16 @@ export function FlowPage() {
     () => resolveFlowProgress(steps, choiceSegments),
     [steps, choiceSegments],
   );
+
+  useEffect(() => {
+    if (!flow || progress.status !== "invalid") return;
+    const path = choiceSegments.length
+      ? `/flow/${flow.slug}/${choiceSegments.join("/")}`
+      : `/flow/${flow.slug}`;
+    if (trackedInvalidPath.current === path) return;
+    trackedInvalidPath.current = path;
+    trackNotFound404(`${progress.message} (${path})`);
+  }, [flow, progress, choiceSegments]);
 
   const breadcrumbs = useMemo<FlowBreadcrumb[]>(() => {
     if (!flow || progress.status === "invalid") return [];
@@ -122,12 +134,17 @@ export function FlowPage() {
   if (progress.status === "invalid") {
     return (
       <main className="home-main">
-        <div className="state-box error">
-          <strong>Ongeldige keuze</strong>
-          <p style={{ marginTop: "0.75rem" }}>{progress.message}</p>
-          <p style={{ marginTop: "1rem" }}>
-            <Link to={flowPath(flow.slug, [])}>Opnieuw starten</Link>
+        <div className="not-found-box">
+          <h1 className="not-found-title">
+            Het lijkt erop dat je een verkeerde afslag nam.
+          </h1>
+          <p className="not-found-text">
+            Geen probleem. Ga via de knop hieronder weer naar de startpagina om
+            een afspraak te boeken.
           </p>
+          <Link className="not-found-btn" to="/">
+            Maak een nieuwe afspraak
+          </Link>
         </div>
       </main>
     );
