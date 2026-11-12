@@ -160,6 +160,7 @@ export type CreateBookingPayload = {
   sellerId: string | null;
   productName?: string | null;
   privacyAccepted: true;
+  recaptchaToken: string;
   customer: {
     firstName: string;
     lastName: string;

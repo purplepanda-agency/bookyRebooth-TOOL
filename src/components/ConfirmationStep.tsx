@@ -12,6 +12,7 @@ import {
   type BookingSelection,
 } from "../flow/bookingSegment";
 import { resolveDayStartHour } from "../flow/agendaDate";
+import { getBookingRecaptchaToken } from "../lib/recaptcha";
 
 type ConfirmationStepProps = {
   formTitle: string;
@@ -176,6 +177,7 @@ export function ConfirmationStep({
     setSubmitting(true);
     setError(null);
     try {
+      const recaptchaToken = await getBookingRecaptchaToken();
       const bookingResult = await createPublicBooking({
         location: locationSlug,
         category: categorySlug,
@@ -185,6 +187,7 @@ export function ConfirmationStep({
         sellerId: booking.sellerId ?? seller?.sellerId ?? null,
         productName: showProduct ? product!.name : null,
         privacyAccepted: true,
+        recaptchaToken,
         customer: {
           firstName: form.firstName.trim(),
           lastName: form.lastName.trim(),

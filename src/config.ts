@@ -2,6 +2,9 @@ export const CMS_URL = (import.meta.env.VITE_CMS_URL || "").replace(/\/$/, "");
 export const ENTITY_SLUG = (
   import.meta.env.VITE_ENTITY_SLUG || ""
 ).trim().toLowerCase();
+export const RECAPTCHA_SITE_KEY = (
+  import.meta.env.VITE_RECAPTCHA_SITE_KEY || ""
+).trim();
 
 export function mediaUrl(path: string | null | undefined) {
   if (!path) return null;
