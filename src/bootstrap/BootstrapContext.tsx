@@ -20,6 +20,7 @@ type BootstrapState = {
   entityName: string;
   logoUrl: string | null;
   introText: string;
+  maintenanceMode: boolean;
   flows: PublicFlow[];
 };
 
@@ -33,6 +34,7 @@ export function BootstrapProvider({ children }: { children: ReactNode }) {
   const [introText, setIntroText] = useState(
     "Kies een bookingflow om te starten",
   );
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [flows, setFlows] = useState<PublicFlow[]>([]);
 
   useEffect(() => {
@@ -56,6 +58,7 @@ export function BootstrapProvider({ children }: { children: ReactNode }) {
           data.entity.introText?.trim() ||
             "Kies een bookingflow om te starten",
         );
+        setMaintenanceMode(Boolean(data.entity.maintenanceMode));
         setFlows(data.flows);
       } catch (err) {
         if (!cancelled) {
@@ -74,7 +77,15 @@ export function BootstrapProvider({ children }: { children: ReactNode }) {
 
   return (
     <BootstrapContext.Provider
-      value={{ loading, error, entityName, logoUrl, introText, flows }}
+      value={{
+        loading,
+        error,
+        entityName,
+        logoUrl,
+        introText,
+        maintenanceMode,
+        flows,
+      }}
     >
       {children}
     </BootstrapContext.Provider>

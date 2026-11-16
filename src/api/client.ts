@@ -20,6 +20,7 @@ export type BootstrapResponse = {
     gtmId: string | null;
     headerScripts: string | null;
     footerScripts: string | null;
+    maintenanceMode?: boolean;
   };
   flows: PublicFlow[];
 };

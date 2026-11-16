@@ -199,8 +199,6 @@ input {
 
 .step-content-blocks {
   width: 100%;
-  margin-top: auto;
-  padding-top: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -344,6 +342,10 @@ input {
 }
 
 .choice-grid-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+  justify-content: center;
+  justify-items: stretch;
   gap: 1rem;
 }
 
@@ -364,8 +366,10 @@ input {
 }
 
 .choice-card-product {
-  flex: 1 1 220px;
-  max-width: 320px;
+  flex: initial;
+  width: auto;
+  max-width: 260px;
+  justify-self: center;
 }
 
 .choice-card:hover {
@@ -1075,10 +1079,17 @@ input {
 
 @media (max-width: 900px) {
   .flow-card,
-  .choice-card,
-  .choice-card-product {
+  .choice-card {
     flex-basis: 100%;
     max-width: 100%;
+  }
+
+  .choice-grid-products {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 220px));
+  }
+
+  .choice-card-product {
+    max-width: 220px;
   }
 
   .agenda-slot-grid {
