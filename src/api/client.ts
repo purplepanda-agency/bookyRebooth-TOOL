@@ -40,12 +40,16 @@ export type PublicStepOption = {
   address?: string | null;
 };
 
+export type PublicContentBlockButton = {
+  label: string;
+  url: string;
+};
+
 export type PublicContentBlock = {
   id: string;
   title: string;
   text: string;
-  buttonLabel: string | null;
-  buttonUrl: string | null;
+  buttons: PublicContentBlockButton[];
 };
 
 export type PublicFlowStep = {

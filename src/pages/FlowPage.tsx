@@ -181,7 +181,6 @@ export function FlowPage() {
       <main className="home-main home-main-agenda">
         <div className="step-heading">
           <FlowBreadcrumbs items={breadcrumbs} />
-          <StepContentBlocks blocks={currentStep.contentBlocks} />
         </div>
         <SellersAgendaStep
           locationSlug={locationSelection?.option?.slug ?? null}
@@ -191,6 +190,7 @@ export function FlowPage() {
             navigate(flowPath(flow.slug, [...choiceSegments, segment]));
           }}
         />
+        <StepContentBlocks blocks={currentStep.contentBlocks} />
       </main>
     );
   }
@@ -218,7 +218,6 @@ export function FlowPage() {
       <main className="home-main home-main-confirm">
         <div className="step-heading">
           <FlowBreadcrumbs items={breadcrumbs} />
-          <StepContentBlocks blocks={currentStep.contentBlocks} />
         </div>
         <ConfirmationStep
           formTitle={currentStep.title?.trim() || "Persoonlijke gegevens"}
@@ -230,6 +229,7 @@ export function FlowPage() {
           locationSlug={locationSelection?.option?.slug ?? null}
           categorySlug={categorySelection?.option?.slug ?? null}
         />
+        <StepContentBlocks blocks={currentStep.contentBlocks} />
       </main>
     );
   }
@@ -246,7 +246,6 @@ export function FlowPage() {
     <main className="home-main home-main-step">
       <div className="step-heading">
         <FlowBreadcrumbs items={breadcrumbs} />
-        <StepContentBlocks blocks={currentStep.contentBlocks} />
         {stepTitle ? <p className="home-intro">{stepTitle}</p> : null}
       </div>
       <ChoiceGrid
@@ -258,6 +257,7 @@ export function FlowPage() {
           flowPath(flow.slug, [...choiceSegments, option.slug])
         }
       />
+      <StepContentBlocks blocks={currentStep.contentBlocks} />
     </main>
   );
 }
