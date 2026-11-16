@@ -11,6 +11,7 @@ import { ChoiceGrid } from "../components/ChoiceGrid";
 import { ConfirmationStep } from "../components/ConfirmationStep";
 import { FlowBreadcrumbs } from "../components/FlowBreadcrumbs";
 import { SellersAgendaStep } from "../components/SellersAgendaStep";
+import { StepContentBlocks } from "../components/StepContentBlocks";
 import { buildBookingSegment } from "../flow/bookingSegment";
 import {
   buildFlowBreadcrumbs,
@@ -180,6 +181,7 @@ export function FlowPage() {
       <main className="home-main home-main-agenda">
         <div className="step-heading">
           <FlowBreadcrumbs items={breadcrumbs} />
+          <StepContentBlocks blocks={currentStep.contentBlocks} />
         </div>
         <SellersAgendaStep
           locationSlug={locationSelection?.option?.slug ?? null}
@@ -216,6 +218,7 @@ export function FlowPage() {
       <main className="home-main home-main-confirm">
         <div className="step-heading">
           <FlowBreadcrumbs items={breadcrumbs} />
+          <StepContentBlocks blocks={currentStep.contentBlocks} />
         </div>
         <ConfirmationStep
           formTitle={currentStep.title?.trim() || "Persoonlijke gegevens"}
@@ -243,6 +246,7 @@ export function FlowPage() {
     <main className="home-main home-main-step">
       <div className="step-heading">
         <FlowBreadcrumbs items={breadcrumbs} />
+        <StepContentBlocks blocks={currentStep.contentBlocks} />
         {stepTitle ? <p className="home-intro">{stepTitle}</p> : null}
       </div>
       <ChoiceGrid

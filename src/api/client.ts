@@ -40,6 +40,14 @@ export type PublicStepOption = {
   address?: string | null;
 };
 
+export type PublicContentBlock = {
+  id: string;
+  title: string;
+  text: string;
+  buttonLabel: string | null;
+  buttonUrl: string | null;
+};
+
 export type PublicFlowStep = {
   id: string;
   type: PublicStepType;
@@ -47,6 +55,7 @@ export type PublicFlowStep = {
   title: string | null;
   imageFit?: "contain" | "cover";
   options: PublicStepOption[];
+  contentBlocks?: PublicContentBlock[];
 };
 
 export type PublicFlowDetailResponse = {
