@@ -222,6 +222,7 @@ export function FlowPage() {
         <ConfirmationStep
           formTitle={currentStep.title?.trim() || "Persoonlijke gegevens"}
           entityName={entityName}
+          flowSlug={flowSlug}
           booking={bookingSelection.booking}
           location={locationSelection?.option ?? null}
           category={categorySelection?.option ?? null}

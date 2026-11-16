@@ -173,6 +173,7 @@ export type CreateBookingPayload = {
   end: string;
   sellerId: string | null;
   productName?: string | null;
+  flowSlug?: string;
   privacyAccepted: true;
   recaptchaToken: string;
   customer: {

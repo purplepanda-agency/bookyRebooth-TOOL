@@ -17,6 +17,7 @@ import { getBookingRecaptchaToken } from "../lib/recaptcha";
 type ConfirmationStepProps = {
   formTitle: string;
   entityName: string;
+  flowSlug: string;
   booking: BookingSelection;
   location: PublicStepOption | null;
   category: PublicStepOption | null;
@@ -66,6 +67,7 @@ function pickAssignedSeller(
 export function ConfirmationStep({
   formTitle,
   entityName,
+  flowSlug,
   booking,
   location,
   category,
@@ -186,6 +188,7 @@ export function ConfirmationStep({
         end: booking.end,
         sellerId: booking.sellerId ?? seller?.sellerId ?? null,
         productName: showProduct ? product!.name : null,
+        flowSlug: flowSlug || undefined,
         privacyAccepted: true,
         recaptchaToken,
         customer: {
