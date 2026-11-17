@@ -138,14 +138,19 @@ export type AvailabilitySlotsResponse = {
   date: string;
   weekday: string;
   dayStartHour: number;
-  location: { id: string; name: string; permalink: string };
-  category: { id: string; name: string; slug: string };
+  location: {
+    id: string;
+    name: string;
+    permalink: string;
+    address?: string;
+  } | null;
+  category: { id: string; name: string; slug: string } | null;
   sellers: AvailabilitySeller[];
 };
 
 export async function fetchAvailabilitySlots(input: {
-  location: string;
-  category: string;
+  location?: string | null;
+  category?: string | null;
   date: string;
   dayStartHour?: number;
 }): Promise<AvailabilitySlotsResponse> {
@@ -173,8 +178,8 @@ export type BookingStepResultPayload = {
 };
 
 export type CreateBookingPayload = {
-  location: string;
-  category: string;
+  location?: string | null;
+  category?: string | null;
   date: string;
   start: string;
   end: string;
@@ -206,12 +211,12 @@ export type CreatedBooking = {
     name: string;
     permalink: string;
     address: string;
-  };
+  } | null;
   category: {
     id: string;
     name: string;
     slug: string;
-  };
+  } | null;
   date: string;
   start: string;
   end: string;

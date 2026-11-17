@@ -89,11 +89,6 @@ export function ConfirmationStep({
     let cancelled = false;
 
     async function loadSeller() {
-      if (!locationSlug || !categorySlug) {
-        setSeller(null);
-        return;
-      }
-
       setLoadingSeller(true);
       try {
         const data = await fetchAvailabilitySlots({
@@ -174,10 +169,6 @@ export function ConfirmationStep({
       setError("Je moet akkoord gaan met de Privacy Policy.");
       return;
     }
-    if (!locationSlug || !categorySlug) {
-      setError("Locatie of categorie ontbreekt voor deze booking.");
-      return;
-    }
 
     setSubmitting(true);
     setError(null);
@@ -251,8 +242,10 @@ export function ConfirmationStep({
                 {created.seller.name}
                 {entityName ? ` – ${entityName}` : ""}
               </h2>
-              <p>Locatie: {created.location.name}</p>
-              {created.location.address ? (
+              {created.location ? (
+                <p>Locatie: {created.location.name}</p>
+              ) : null}
+              {created.location?.address ? (
                 <p>{created.location.address}</p>
               ) : null}
               <p>
@@ -282,7 +275,9 @@ export function ConfirmationStep({
               )}
               <div className="confirm-card-body">
                 <h2>{created.productName}</h2>
-                <p className="muted">{created.category.name}</p>
+                {created.category ? (
+                  <p className="muted">{created.category.name}</p>
+                ) : null}
               </div>
             </article>
           ) : null}

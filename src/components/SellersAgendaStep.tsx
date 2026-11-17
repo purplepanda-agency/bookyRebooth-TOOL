@@ -62,12 +62,6 @@ export function SellersAgendaStep({
     let cancelled = false;
 
     async function load() {
-      if (!locationSlug || !categorySlug) {
-        setSellers([]);
-        setError(null);
-        return;
-      }
-
       setLoading(true);
       setError(null);
       setSelectedSlot(null);
@@ -130,19 +124,6 @@ export function SellersAgendaStep({
     }
     return [...byStart.values()].sort((a, b) => a.start.localeCompare(b.start));
   }, [sellers, selectedSeller]);
-
-  if (!locationSlug || !categorySlug) {
-    return (
-      <div className="agenda-layout">
-        <div className="state-box muted">
-          <strong>Agenda niet beschikbaar</strong>
-          <p style={{ marginTop: "0.75rem" }}>
-            Voor deze stap zijn een locatie en categorie nodig in de flow.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="agenda-layout">
