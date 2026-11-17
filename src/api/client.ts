@@ -165,6 +165,13 @@ export async function fetchAvailabilitySlots(input: {
   return response.json() as Promise<AvailabilitySlotsResponse>;
 }
 
+export type BookingStepResultPayload = {
+  index: number;
+  type: string;
+  name: string;
+  slug: string;
+};
+
 export type CreateBookingPayload = {
   location: string;
   category: string;
@@ -174,6 +181,7 @@ export type CreateBookingPayload = {
   sellerId: string | null;
   productName?: string | null;
   flowSlug?: string;
+  stepResults?: BookingStepResultPayload[];
   privacyAccepted: true;
   recaptchaToken: string;
   customer: {

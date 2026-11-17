@@ -11,6 +11,7 @@ import {
   formatBookingLabel,
   type BookingSelection,
 } from "../flow/bookingSegment";
+import type { BookingStepResult } from "../flow/progress";
 import { resolveDayStartHour } from "../flow/agendaDate";
 import { getBookingRecaptchaToken } from "../lib/recaptcha";
 
@@ -24,6 +25,7 @@ type ConfirmationStepProps = {
   product: PublicStepOption | null;
   locationSlug: string | null;
   categorySlug: string | null;
+  stepResults: BookingStepResult[];
 };
 
 type FormState = {
@@ -74,6 +76,7 @@ export function ConfirmationStep({
   product,
   locationSlug,
   categorySlug,
+  stepResults,
 }: ConfirmationStepProps) {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [seller, setSeller] = useState<AvailabilitySeller | null>(null);
@@ -189,6 +192,12 @@ export function ConfirmationStep({
         sellerId: booking.sellerId ?? seller?.sellerId ?? null,
         productName: showProduct ? product!.name : null,
         flowSlug: flowSlug || undefined,
+        stepResults: stepResults.map((result) => ({
+          index: result.index,
+          type: result.type,
+          name: result.name,
+          slug: result.slug,
+        })),
         privacyAccepted: true,
         recaptchaToken,
         customer: {

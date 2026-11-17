@@ -17,6 +17,7 @@ import {
   buildFlowBreadcrumbs,
   flowPath,
   resolveFlowProgress,
+  buildBookingStepResults,
   selectionByType,
   type FlowBreadcrumb,
 } from "../flow/progress";
@@ -229,6 +230,7 @@ export function FlowPage() {
           product={productSelection?.option ?? null}
           locationSlug={locationSelection?.option?.slug ?? null}
           categorySlug={categorySelection?.option?.slug ?? null}
+          stepResults={buildBookingStepResults(selections)}
         />
         <StepContentBlocks blocks={currentStep.contentBlocks} />
       </main>

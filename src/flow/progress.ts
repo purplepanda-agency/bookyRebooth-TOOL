@@ -206,3 +206,24 @@ export function selectionByType(
     .reverse()
     .find((selection) => selection.type === type && selection.option);
 }
+
+export type BookingStepResult = {
+  index: number;
+  type: FlowSelection["type"];
+  name: string;
+  slug: string;
+};
+
+/** 1-based resultstepN-waarden in flowvolgorde (niet-CONFIRMATION keuzes). */
+export function buildBookingStepResults(
+  selections: FlowSelection[],
+): BookingStepResult[] {
+  return selections
+    .filter((selection) => selection.option)
+    .map((selection, index) => ({
+      index: index + 1,
+      type: selection.type,
+      name: selection.option!.name,
+      slug: selection.option!.slug,
+    }));
+}
