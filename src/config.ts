@@ -21,9 +21,6 @@ export const RECAPTCHA_SITE_KEY = (
 export function mediaUrl(path: string | null | undefined) {
   if (!path) return null;
   if (/^https?:\/\//i.test(path)) return path;
-  if (path.startsWith("/")) {
-    // Prefer relative path so Vite proxy serves /media in dev
-    return path;
-  }
-  return `${CMS_URL}/${path}`;
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  return CMS_URL ? `${CMS_URL}${normalized}` : normalized;
 }
