@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useBootstrap } from "../bootstrap/BootstrapContext";
-import { ENTITY_SLUG, mediaUrl } from "../config";
+import { mediaUrl } from "../config";
 
 export function HomePage() {
   const { loading, error, introText, flows } = useBootstrap();
@@ -20,7 +20,7 @@ export function HomePage() {
           <strong>Kan niet starten</strong>
           <p style={{ marginTop: "0.75rem" }}>{error}</p>
           <p style={{ marginTop: "0.75rem", color: "var(--muted)" }}>
-            Entiteit: <code>{ENTITY_SLUG || "(niet gezet)"}</code>
+            Domein: <code>{window.location.host}</code>
           </p>
         </div>
       </main>

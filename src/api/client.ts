@@ -1,4 +1,4 @@
-import { CMS_URL, ENTITY_SLUG } from "../config";
+import { CMS_URL, ENTITY_SLUG, isLocalDevHost } from "../config";
 
 export type PublicFlow = {
   id: string;
@@ -77,6 +77,18 @@ async function parseError(response: Response) {
   }
 }
 
+function publicBasePath() {
+  if (isLocalDevHost(window.location.host)) {
+    if (!ENTITY_SLUG) {
+      throw new Error(
+        "VITE_ENTITY_SLUG ontbreekt. Die is alleen nodig om lokaal te testen.",
+      );
+    }
+    return `/api/public/${encodeURIComponent(ENTITY_SLUG)}`;
+  }
+  return "/api/public";
+}
+
 function publicUrl(path: string) {
   const host = window.location.host;
   const params = new URLSearchParams({ host });
@@ -87,11 +99,7 @@ function publicUrl(path: string) {
 }
 
 export async function fetchBootstrap(): Promise<BootstrapResponse> {
-  if (!ENTITY_SLUG) {
-    throw new Error("VITE_ENTITY_SLUG ontbreekt in de omgeving");
-  }
-
-  const path = `/api/public/${encodeURIComponent(ENTITY_SLUG)}/bootstrap`;
+  const path = `${publicBasePath()}/bootstrap`;
   const response = await fetch(publicUrl(path));
   if (!response.ok) {
     throw new Error(await parseError(response));
@@ -102,11 +110,7 @@ export async function fetchBootstrap(): Promise<BootstrapResponse> {
 export async function fetchFlow(
   flowSlug: string,
 ): Promise<PublicFlowDetailResponse> {
-  if (!ENTITY_SLUG) {
-    throw new Error("VITE_ENTITY_SLUG ontbreekt in de omgeving");
-  }
-
-  const path = `/api/public/${encodeURIComponent(ENTITY_SLUG)}/flows/${encodeURIComponent(flowSlug)}`;
+  const path = `${publicBasePath()}/flows/${encodeURIComponent(flowSlug)}`;
   const response = await fetch(publicUrl(path));
   if (!response.ok) {
     throw new Error(await parseError(response));
@@ -154,11 +158,7 @@ export async function fetchAvailabilitySlots(input: {
   date: string;
   dayStartHour?: number;
 }): Promise<AvailabilitySlotsResponse> {
-  if (!ENTITY_SLUG) {
-    throw new Error("VITE_ENTITY_SLUG ontbreekt in de omgeving");
-  }
-
-  const path = `/api/public/${encodeURIComponent(ENTITY_SLUG)}/availability/slots`;
+  const path = `${publicBasePath()}/availability/slots`;
   const response = await fetch(publicUrl(path), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -227,9 +227,13 @@ export type CreatedBooking = {
 
 /** Fire-and-forget client-side 404 (ongeldige flow-URL / keuze). */
 export function trackNotFound404(message: string) {
-  if (!ENTITY_SLUG) return;
+  let path: string;
+  try {
+    path = `${publicBasePath()}/analytics/events`;
+  } catch {
+    return;
+  }
 
-  const path = `/api/public/${encodeURIComponent(ENTITY_SLUG)}/analytics/events`;
   void fetch(publicUrl(path), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -245,11 +249,7 @@ export function trackNotFound404(message: string) {
 export async function createPublicBooking(
   input: CreateBookingPayload,
 ): Promise<CreatedBooking> {
-  if (!ENTITY_SLUG) {
-    throw new Error("VITE_ENTITY_SLUG ontbreekt in de omgeving");
-  }
-
-  const path = `/api/public/${encodeURIComponent(ENTITY_SLUG)}/bookings`;
+  const path = `${publicBasePath()}/bookings`;
   const response = await fetch(publicUrl(path), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
