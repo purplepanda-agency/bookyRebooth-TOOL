@@ -98,6 +98,9 @@ export function FlowPage() {
     const onConfirmation =
       progress.status === "step" &&
       progress.currentStep.type === "CONFIRMATION";
+    const onAgenda =
+      progress.status === "step" &&
+      progress.currentStep.type === "SELLERS_AGENDA";
     return buildFlowBreadcrumbs(
       flow.name,
       flow.slug,
@@ -107,6 +110,7 @@ export function FlowPage() {
         confirmationLabel: onConfirmation
           ? progress.currentStep.title?.trim() || "Formulier"
           : null,
+        onAgenda,
       },
     );
   }, [flow, progress, choiceSegments]);

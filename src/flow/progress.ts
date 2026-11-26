@@ -28,18 +28,54 @@ export type FlowProgress =
       message: string;
     };
 
-function stepNeedsChoice(step: PublicFlowStep) {
-  return step.type !== "CONFIRMATION";
+function normalizeSegment(value: string) {
+  return value.trim().toLowerCase();
 }
 
+function findOption(
+  step: PublicFlowStep,
+  segment: string,
+): PublicStepOption | null {
+  const needle = normalizeSegment(segment);
+  return (
+    step.options.find((item) => normalizeSegment(item.slug) === needle) ?? null
+  );
+}
+
+/** Zoek vanaf `fromIndex` de eerstvolgende stap die dit URL-segment kan consumeren. */
+function findStepForSegment(
+  steps: PublicFlowStep[],
+  fromIndex: number,
+  segment: string,
+): number | null {
+  for (let index = fromIndex; index < steps.length; index += 1) {
+    const step = steps[index]!;
+    if (step.type === "CONFIRMATION") break;
+
+    if (step.type === "SELLERS_AGENDA") {
+      if (parseBookingSegment(segment)) return index;
+      continue;
+    }
+
+    if (findOption(step, segment)) return index;
+  }
+  return null;
+}
+
+/**
+ * Lost flow-voortgang op uit URL-segmenten.
+ * Segmenten mogen direct naar een latere optie springen (tussenstappen overslaan),
+ * zodat deep links zoals `/flow/bmw/belien-lommel` werken.
+ */
 export function resolveFlowProgress(
   steps: PublicFlowStep[],
   segments: string[],
 ): FlowProgress {
   const selections: FlowSelection[] = [];
   let segmentIndex = 0;
+  let stepIndex = 0;
 
-  for (let stepIndex = 0; stepIndex < steps.length; stepIndex += 1) {
+  while (stepIndex < steps.length) {
     const step = steps[stepIndex]!;
 
     if (step.type === "CONFIRMATION") {
@@ -57,22 +93,37 @@ export function resolveFlowProgress(
       };
     }
 
-    if (step.type === "SELLERS_AGENDA") {
-      if (segmentIndex >= segments.length) {
-        return {
-          status: "step",
-          currentStepIndex: stepIndex,
-          currentStep: step,
-          selections,
-        };
-      }
+    if (segmentIndex >= segments.length) {
+      return {
+        status: "step",
+        currentStepIndex: stepIndex,
+        currentStep: step,
+        selections,
+      };
+    }
 
-      const slug = segments[segmentIndex]!;
-      const booking = parseBookingSegment(slug);
+    const segment = segments[segmentIndex]!;
+    const targetIndex = findStepForSegment(steps, stepIndex, segment);
+
+    if (targetIndex == null) {
+      return {
+        status: "invalid",
+        message: `Ongeldige keuze “${segment}” in deze flow.`,
+      };
+    }
+
+    // Deep link: tussenliggende stappen overslaan zonder selectie.
+    if (targetIndex > stepIndex) {
+      stepIndex = targetIndex;
+      continue;
+    }
+
+    if (step.type === "SELLERS_AGENDA") {
+      const booking = parseBookingSegment(segment);
       if (!booking) {
         return {
           status: "invalid",
-          message: `Ongeldige afspraakkeuze “${slug}” in deze flow.`,
+          message: `Ongeldige afspraakkeuze “${segment}” in deze flow.`,
         };
       }
 
@@ -88,42 +139,15 @@ export function resolveFlowProgress(
         booking,
       });
       segmentIndex += 1;
+      stepIndex += 1;
       continue;
     }
 
-    if (!stepNeedsChoice(step)) {
-      if (segmentIndex === segments.length) {
-        return {
-          status: "step",
-          currentStepIndex: stepIndex,
-          currentStep: step,
-          selections,
-        };
-      }
-
-      selections.push({
-        stepIndex,
-        type: step.type,
-        option: null,
-      });
-      continue;
-    }
-
-    if (segmentIndex >= segments.length) {
-      return {
-        status: "step",
-        currentStepIndex: stepIndex,
-        currentStep: step,
-        selections,
-      };
-    }
-
-    const slug = segments[segmentIndex]!;
-    const option = step.options.find((item) => item.slug === slug) ?? null;
+    const option = findOption(step, segment);
     if (!option) {
       return {
         status: "invalid",
-        message: `Ongeldige keuze “${slug}” in deze flow.`,
+        message: `Ongeldige keuze “${segment}” in deze flow.`,
       };
     }
 
@@ -133,6 +157,7 @@ export function resolveFlowProgress(
       option,
     });
     segmentIndex += 1;
+    stepIndex += 1;
   }
 
   if (segmentIndex < segments.length) {
@@ -162,11 +187,22 @@ export function buildFlowBreadcrumbs(
   flowName: string,
   flowSlug: string,
   selections: FlowSelection[],
-  segments: string[],
-  options?: { confirmationLabel?: string | null },
+  _segments?: string[],
+  options?: {
+    confirmationLabel?: string | null;
+    /** Op agenda: laatste keuze blijft aanklikbaar (deep link blijft geldig). */
+    onAgenda?: boolean;
+  },
 ): FlowBreadcrumb[] {
   const choiceSelections = selections.filter((selection) => selection.option);
   const confirmationLabel = options?.confirmationLabel?.trim() || null;
+  const onAgenda = Boolean(options?.onAgenda);
+  const pathSlugs = choiceSelections.map(
+    (selection) => selection.option!.slug,
+  );
+  const atFlowRoot =
+    pathSlugs.length === 0 && !confirmationLabel && !onAgenda;
+
   const crumbs: FlowBreadcrumb[] = [
     {
       label: "Home",
@@ -174,14 +210,14 @@ export function buildFlowBreadcrumbs(
     },
     {
       label: flowName,
-      to: segments.length === 0 ? null : flowPath(flowSlug, []),
+      to: atFlowRoot ? null : flowPath(flowSlug, []),
     },
   ];
 
   choiceSelections.forEach((selection, index) => {
-    const target = flowPath(flowSlug, segments.slice(0, index + 1));
-    const isCurrent =
-      !confirmationLabel && index === choiceSelections.length - 1;
+    const target = flowPath(flowSlug, pathSlugs.slice(0, index + 1));
+    const isLast = index === choiceSelections.length - 1;
+    const isCurrent = isLast && !confirmationLabel && !onAgenda;
     crumbs.push({
       label: selection.option!.name,
       to: isCurrent ? null : target,
