@@ -1,0 +1,13 @@
+# SPA fallback: deep links (/flow/...) moeten index.html laden.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Bestaande bestanden/mappen (assets) gewoon doorlaten
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Alle andere routes → React app
+  RewriteRule ^ index.html [L]
+</IfModule>
